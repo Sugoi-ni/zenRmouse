@@ -10,13 +10,19 @@ for %%d in (C D E F) do (
     if exist "%%d:\Projects\zenRmouse\start.bat" ( set "FOUND=%%d:\Projects\zenRmouse" & goto :run )
 )
 
-REM Search in user directories
+REM Search in user home directories
 for /d %%u in (%USERPROFILE%\*) do (
     if exist "%%u\WiiCtl\start.bat" ( set "FOUND=%%u\WiiCtl" & goto :run )
     if exist "%%u\zenRmouse\start.bat" ( set "FOUND=%%u\zenRmouse" & goto :run )
-    if exist "%%u\Desktop\WiiCtl\start.bat" ( set "FOUND=%%u\Desktop\WiiCtl" & goto :run )
-    if exist "%%u\Desktop\zenRmouse\start.bat" ( set "FOUND=%%u\Desktop\zenRmouse" & goto :run )
 )
+
+REM Search on Desktop
+if exist "%USERPROFILE%\Desktop\WiiCtl\start.bat" ( set "FOUND=%USERPROFILE%\Desktop\WiiCtl" & goto :run )
+if exist "%USERPROFILE%\Desktop\zenRmouse\start.bat" ( set "FOUND=%USERPROFILE%\Desktop\zenRmouse" & goto :run )
+
+REM Direct path fallback
+if exist "%USERPROFILE%\WiiCtl\start.bat" ( set "FOUND=%USERPROFILE%\WiiCtl" & goto :run )
+if exist "%USERPROFILE%\zenRmouse\start.bat" ( set "FOUND=%USERPROFILE%\zenRmouse" & goto :run )
 
 echo [!] zenRmouse repo not found!
 echo     Place the repo folder in your home directory or Desktop.
