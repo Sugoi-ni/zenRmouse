@@ -1,0 +1,20 @@
+{
+  "name": "wiictl-server",
+  "version": "1.0.0",
+  "description": "PC-side WebSocket receiver for the WiiCtl phone remote control",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "spike": "node src/spike.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4",
+    "ws": "^8.21.3"
+  },
+  "optionalDependencies": {
+    "robotjs": "^0.6.0"
+  }
+}
