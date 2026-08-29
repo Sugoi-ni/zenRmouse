@@ -7,24 +7,22 @@ echo  ZenRmouse - Starting...
 echo ===================================
 
 set ANDROID_HOME=C:\Users\Arif\AppData\Local\Android\Sdk
-set WS_PID=
 
-REM Start server
+REM Start server silently
 echo [*] Starting server...
 cd /d C:\Users\Arif\WiiCtl\server
-start "" /B node src/index.js
-for /f "tokens=2" %%a in ('tasklist /fi "imagename eq node.exe" /fo list ^| findstr PID') do set WS_PID=%%a
+start "" /min node src/index.js
 
-REM Start Metro
+REM Wait for server
+timeout /t 3 /nobreak >nul
+
+REM Start Metro in this window
 echo [*] Starting Metro bundler...
 cd /d C:\Users\Arif\WiiCtl\mobile
 npx expo start --dev-client
 
-REM When Metro stops, cleanup
+REM When Metro exits, do cleanup
 echo.
-echo [*] Stopping server...
-if defined WS_PID taskkill /PID %WS_PID% /F >nul 2>&1
-
 echo [*] Setting ADB reverse...
 %ANDROID_HOME%\platform-tools\adb.exe reverse tcp:8081 tcp:8081
 
@@ -33,6 +31,6 @@ start http://localhost:8320
 
 echo.
 echo ===================================
-echo  Done! App is running on phone.
+echo  Done!
 echo ===================================
 pause
