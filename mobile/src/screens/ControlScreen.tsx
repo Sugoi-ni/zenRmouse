@@ -421,7 +421,7 @@ const s = StyleSheet.create({
   bottomBtn: {
     flex: 1, paddingVertical: 18, alignItems: 'center', justifyContent: 'center',
   },
-  bottomBtnText: { color: '#fff', fontSize: 16, fontWeight: '900', letterSpacing: 2 },
+  bottomBtnText: { color: '#fff', fontSize: 13, fontWeight: '900', letterSpacing: 1 },
   dragActive: { backgroundColor: '#7c3aed' },
 
   // Motion
