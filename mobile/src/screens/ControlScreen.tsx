@@ -182,6 +182,14 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
             {/* Ust: Kisayol butonlari */}
             <View style={s.buttonArea}>
               <View style={s.btnRow}>
+                <TouchableOpacity style={[s.hotkeyBtn, { borderColor: C.accent }]} onPress={() => doAction('hotkey', { mods: 'ALT', key: 'LEFT' })}>
+                  <Text style={[s.btnLabel, { color: C.accent }]}>{'<< GERI'}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[s.hotkeyBtn, { borderColor: C.accent }]} onPress={() => doAction('hotkey', { mods: 'ALT', key: 'RIGHT' })}>
+                  <Text style={[s.btnLabel, { color: C.accent }]}>{'ILERI >>'}</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={s.btnRow}>
                 {[
                   { label: 'Ctrl+C', action: { action: 'hotkey', mods: 'CTRL', key: 'c' } },
                   { label: 'Ctrl+V', action: { action: 'hotkey', mods: 'CTRL', key: 'v' } },
