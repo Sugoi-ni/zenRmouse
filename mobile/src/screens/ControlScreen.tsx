@@ -235,17 +235,15 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
               )}
             </View>
 
-            {/* Alt: Surukleme + Sol Tik / Sag Tik */}
+            {/* Bottom: Drag + Left Click / Right Click */}
             <View style={s.bottomButtons}>
               <TouchableOpacity
                 style={[s.bottomBtn, isDragging ? s.dragActive : { backgroundColor: '#1e40af' }]}
                 onPress={() => {
                   if (isDragging) {
-                    // Suruklemeyi bitir
                     doAction('up', { button: 'left' });
                     setIsDragging(false);
                   } else {
-                    // Suruklemeyi baslat
                     setIsDragging(true);
                     doAction('down', { button: 'left' });
                   }
@@ -257,13 +255,13 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
                 style={[s.bottomBtn, { backgroundColor: '#1e40af' }]}
                 onPress={() => doAction('click', { button: 'left' })}
               >
-                <Text style={s.bottomBtnText}>SOL TIK</Text>
+                <Text style={s.bottomBtnText}>LEFT CLICK</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[s.bottomBtn, { backgroundColor: '#991b1b' }]}
                 onPress={() => doAction('click', { button: 'right' })}
               >
-                <Text style={s.bottomBtnText}>SAG TIK</Text>
+                <Text style={s.bottomBtnText}>RIGHT CLICK</Text>
               </TouchableOpacity>
             </View>
           </View>
