@@ -1,30 +1,30 @@
 # ZenRmouse
 
-Telefonunuzu kablosuz fare, klavye ve medya kontrolucusu olarak kullanin.
+Turn your phone into a wireless mouse, keyboard, and media controller over WiFi.
 
 ```
-Telefon (Expo) ──WiFi/WebSocket──► Node.js Sunucu ──TCP──► PowerShell Bridge ──► Win32 API ──► Fare hareket, tiklama, tus basimi
+Phone (Expo) ──WiFi/WebSocket──► Node.js Server ──TCP──► PowerShell Bridge ──► Win32 API ──► Cursor movement, clicks, key presses
 ```
 
-## Ozellikler
+## Features
 
-| Ozellik | Aciklama |
-|---------|----------|
-| **Dokunmatik Fare** | Parmak kaydirarak fareyi hareket ettirin, dokunarak tiklayin, surukleyin |
-| **Hareketle Fare** | Telefonu egerek fareyi kontrol edin (ivmeolcer) |
-| **Klavye** | Turkce ve tum Unicode karakterleri destekler, Ctrl+C, Alt+Tab gibi kisayollar |
-| **Medya Tuslari** | Ses ac/kapa, sustur, oynat/duraklat, sonraki/onceki sarki |
-| **QR Kod** | QR kodu okutarak otomatik baglanma |
-| **Otomatik Baglanma** | Arka plandan dondugunde otomatik yeniden baglanma |
+| Feature | Description |
+|---------|-------------|
+| **Touch Mouse** | Swipe to move cursor, tap to click, drag mode, two-finger scroll |
+| **Motion Mouse** | Tilt your phone to control the cursor (accelerometer) |
+| **Keyboard** | Full Unicode support (Turkish and all languages), hotkeys (Ctrl+C, Alt+Tab, etc.) |
+| **Media Keys** | Volume up/down, mute, play/pause, next/previous track, stop |
+| **QR Code Pairing** | Scan QR code to connect automatically |
+| **Auto-Reconnect** | Reconnects when returning from background |
 
-## Mimari
+## Architecture
 
 ```
 ┌─────────────────┐     WiFi/WebSocket      ┌──────────────┐      TCP       ┌────────────────┐
 │                 │ ──────────────────────►  │              │ ────────────►  │                │
-│  Telefondaki    │                          │  Node.js     │               │  PowerShell    │
-│  Uygulama       │ ◄──────────────────────  │  Sunucu      │ ◄────────────  │  Köprü         │
-│  (React Native) │                          │  (WS:8321)   │               │  (TCP:8322)    │
+│  Phone App      │                          │  Node.js     │               │  PowerShell    │
+│  (React Native) │ ◄──────────────────────  │  Server      │ ◄────────────  │  Bridge        │
+│                 │                          │  (WS:8321)   │               │  (TCP:8322)    │
 └─────────────────┘                          └──────────────┘               └───────┬────────┘
                                                                                     │
                                                                          ┌──────────▼──────────┐
@@ -40,45 +40,45 @@ Telefon (Expo) ──WiFi/WebSocket──► Node.js Sunucu ──TCP──► P
                                                                          └─────────────────────┘
 ```
 
-## Gereksinimler
+## Requirements
 
-| Gereksinim | Versiyon | Aciklama |
-|------------|----------|----------|
-| **Windows** | 10/11 | PowerShell 5.1+ gerekli (varsayilan yuklu) |
-| **Node.js** | v18+ | Sunucu icin |
-| **JDK** | 17 | APK derlemek icin (sadece APK derleme icin) |
-| **Android SDK** | Herhangi | APK derleme + ADB icin (sadece APK derleme icin) |
-| **Android Telefon** | USB hata ayiklama acik | APK yuklemek icin |
+| Requirement | Version | Notes |
+|-------------|---------|-------|
+| **Windows** | 10/11 | PowerShell 5.1+ required (pre-installed) |
+| **Node.js** | v18+ | For running the server |
+| **JDK** | 17 | For building APK only |
+| **Android SDK** | Any | For building APK + ADB only |
+| **Android Phone** | USB debugging enabled | For installing APK |
 
-> **Not:** Sadece sunucuyu calistirmak icin JDK ve Android SDK gerekmez. APK'yi baska bir yerden yukleyebilirsiniz.
+> **Note:** JDK and Android SDK are only needed to build the APK. You can skip them if you use a pre-built APK.
 
-## Kurulum
+## Installation
 
-### Adim 1: Repo'yu Klonlayin
+### Step 1: Clone the Repo
 
 ```bash
 git clone https://github.com/Sugoi-ni/zenRmouse.git
 cd zenRmouse
 ```
 
-### Adim 2: Otomatik Kurulum
+### Step 2: Run Setup
 
 ```bash
 setup.bat
 ```
 
-Bu komut:
-- Masaustune kisayol olusturur
-- Auto-start ayarlar
-- Sunucu bagimliliklarini yukler (`npm install`)
+This will:
+- Create desktop shortcuts
+- Set up auto-start on boot
+- Install server dependencies (`npm install`)
 
-### Adim 3: Sunucuyu Baslatin
+### Step 3: Start the Server
 
 ```bash
 start.bat
 ```
 
-veya terminalden:
+Or manually from terminal:
 
 ```bash
 cd server
@@ -86,149 +86,149 @@ npm install
 node src/index.js
 ```
 
-Sunucu basladiginda sunlari gorursunuz:
+You should see:
 
 ```
 ==================================================
-  ZenRmouse Sunucusu Baslatildi!
+  ZenRmouse Server Started!
 ==================================================
-  QR sayfasi:  http://192.168.1.8:8320
-  WebSocket:   ws://192.168.1.8:8321
-  Ekran boyutu: 1920x1080
+  QR page:    http://192.168.1.8:8320
+  WebSocket:  ws://192.168.1.8:8321
+  Screen:     1920x1080
 ==================================================
 ```
 
-### Adim 4: APK'yi Yukleyin
+### Step 4: Install the APK
 
-**Yontem A: Kendiniz derleyin** (JDK + Android SDK gerekli):
+**Option A: Build it yourself** (requires JDK + Android SDK):
 
 ```bash
 build.bat
 ```
 
-**Yontem B: Hazir APK kullanin** (tavsiye edilen):
+**Option B: Use a pre-built APK** (recommended):
 
-`app-debug.apk` dosyasini telefonunuza yukleyin:
-1. USB kablosu baglayin
-2. `adb install app-debug.apk` calistirin
-3. veya APK dosyasini telefona gonderip yukleyin
+Install `app-debug.apk` on your phone:
+1. Connect USB cable
+2. Run `adb install app-debug.apk`
+3. Or transfer the APK to your phone and install it
 
-### Adim 5: Baglanin
+### Step 5: Connect
 
-1. Telefonda ZenRmouse uygulamasini acin
-2. Bilgisayarin IP adresini girin (ornegin `192.168.1.8`)
+1. Open ZenRmouse on your phone
+2. Enter your PC's IP address (e.g., `192.168.1.8`)
 3. Port: `8321`
-4. **Baglan** butonuna basin
-5. Yesil nokta gorun = baglandi!
+4. Tap **Connect**
+5. Green dot = connected!
 
-> **Alternatif:** `http://192.168.1.8:8320` adresinden QR kodu olusturup telefonunuzla okutabilirsiniz.
+> **Alternative:** Open `http://192.168.1.8:8320` in your PC browser to generate a QR code and scan it from the phone app.
 
-## Kullanim
+## Usage
 
-### Dokunmatik Fare
+### Touch Mouse
 
-- **Parmak kaydir** → Fareyi hareket ettir
-- **Dokun** → Sol tik
-- **Iki parmak kaydir** → Scroll
-- **Uzun bas + surukle** → Surukleme modu (ift tikla ve bekle)
+- **Swipe** → Move cursor
+- **Tap** → Left click
+- **Two-finger swipe** → Scroll
+- **Long press + drag** → Drag mode (double-tap and hold)
 
-### Hareketle Fare
+### Motion Mouse
 
-- **Telefonu eg** → Fareyi hareket ettir
-- **Kalibrasyon** → Ekrana dokunarak merkez noktayi ayarla
+- **Tilt phone** → Move cursor
+- **Calibrate** → Tap screen to set center point
 
-### Klavye
+### Keyboard
 
-- **Metin girisi** → Turkce ve Unicode karakter destegi
-- **Kontrol tuslari** → Enter, Space, Tab, Escape, Backspace
-- **Kisayollar** → Ctrl+C, Ctrl+V, Alt+Tab, Windows tusu
-- **Ok tuslari** → Yukari, asagi, sol, sag
-- **F tuslari** → F1 - F12
+- **Text input** → Turkish and Unicode character support
+- **Control keys** → Enter, Space, Tab, Escape, Backspace
+- **Shortcuts** → Ctrl+C, Ctrl+V, Alt+Tab, Windows key
+- **Arrow keys** → Up, Down, Left, Right
+- **F keys** → F1 - F12
 
-### Medya
+### Media
 
-- **Ses +/-** → Sesi ac/kapa
-- **Sustur** → Sesi tamamen kapat
-- **Oynat/Duraklat** → Muzik/video kontrol
-- **Sonraki/Onceki** → Sarki degistir
-- **Durdur** → Calmayi durdur
+- **Volume +/-** → Volume up/down
+- **Mute** → Mute all sound
+- **Play/Pause** → Music/video control
+- **Next/Previous** → Skip track
+- **Stop** → Stop playback
 
-## Sorun Giderme
+## Troubleshooting
 
-### "bridge not connected" hatasi
+### "bridge not connected" error
 
-Bridge (PowerShell) sunucuya baglanamiyor:
+The PowerShell bridge can't connect to the server:
 
 ```bash
-# tum surecleri oldur ve yeniden baslat
+# Kill all processes and restart
 taskkill /F /IM node.exe
 taskkill /F /IM powershell.exe
 start.bat
 ```
 
-### Telefondan sunucuya baglanamiyor
+### Phone can't connect to server
 
-1. PC ve telefon ayni WiFi aginda mi?
-2. Windows Firewall port 8321'i engelliyor mu?
-3. IP adresi dogru mu? (`ipconfig` ile kontrol edin)
+1. Are PC and phone on the same WiFi network?
+2. Is Windows Firewall blocking port 8321?
+3. Is the IP address correct? (check with `ipconfig`)
 
-### Metro bundler calismiyor
+### Metro bundler not running
 
 ```bash
 cd mobile
 npx expo start --dev-client
 ```
 
-### ADB baglantisi yok
+### ADB not connected
 
 ```bash
-# USB hata ayiklamanin acik oldugundan emin olun
+# Make sure USB debugging is enabled
 adb devices
 adb reverse tcp:8081 tcp:8081
 ```
 
-### Medya tuslari calismadi
+### Media keys not working
 
-Medya tuslari Win32 VK kodlariyla calisir. Eger calmazsa:
-1. Sunucuyu ve bridge'i yeniden baslatin
-2. Uygulamayi kapatip acin
+Media keys use Win32 VK codes. If they don't work:
+1. Restart the server and bridge
+2. Close and reopen the app
 
-## Proje Yapisi
+## Project Structure
 
 ```
 zenRmouse/
-├── server/                  # Node.js sunucu
+├── server/                  # Node.js server
 │   ├── src/
-│   │   ├── index.js         # WebSocket + HTTP sunucu
+│   │   ├── index.js         # WebSocket + HTTP server
 │   │   └── win32/
-│   │       ├── bridge.js    # TCP köprü yoneticisi
-│   │       ├── bridge.ps1   # PowerShell TCP istemcisi
-│   │       └── InputHelper.cs  # C# Win32 API
+│   │       ├── bridge.js    # TCP bridge manager
+│   │       ├── bridge.ps1   # PowerShell TCP client
+│   │       └── InputHelper.cs  # C# Win32 API wrapper
 │   └── package.json
-├── mobile/                  # React Native (Expo) uygulama
+├── mobile/                  # React Native (Expo) app
 │   ├── src/
-│   │   ├── screens/         # Baglanti, Kontrol ekranlari
-│   │   ├── components/      # Dokunmatik, Hareket, Klavye, Medya
-│   │   └── ws/              # WebSocket hook'u
+│   │   ├── screens/         # Connection, Control screens
+│   │   ├── components/      # Touchpad, Motion, Keyboard, Media
+│   │   └── ws/              # WebSocket hook
 │   ├── App.tsx
-│   └── android/             # Android build dosyalari
-├── desktop/                 # Masaustu kisayol scriptleri
-├── setup.bat                # Otomatik kurulum
-├── start.bat                # Sunucu + Metro baslatma
-├── build.bat                # APK derleme + yukleme
+│   └── android/             # Android build files
+├── desktop/                 # Desktop shortcut scripts
+├── setup.bat                # One-click setup
+├── start.bat                # Start server + Metro
+├── build.bat                # Build APK + install
 └── README.md
 ```
 
-## Teknoloji
+## Tech Stack
 
-| Bilesen | Teknoloji |
-|---------|-----------|
-| Mobil | React Native (Expo), TypeScript |
-| Sunucu | Node.js, WebSocket (ws) |
-| Köprü | PowerShell TCP, C# P/Invoke |
-| Girdi | Windows Win32 API (SetCursorPos, SendInput, keybd_event) |
-| Tema | Mor koyu tema |
+| Component | Technology |
+|-----------|------------|
+| Mobile | React Native (Expo), TypeScript |
+| Server | Node.js, WebSocket (ws) |
+| Bridge | PowerShell TCP, C# P/Invoke |
+| Input | Windows Win32 API (SetCursorPos, SendInput, keybd_event) |
+| Theme | Purple dark theme |
 
-## Lisans
+## License
 
 MIT
