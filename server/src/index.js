@@ -10,7 +10,8 @@ const bridge = require('./win32/bridge.js');
 
 const WS_PORT = parseInt(process.env.WS_PORT || '8321', 10);
 const HTTP_PORT = parseInt(process.env.HTTP_PORT || '8320', 10);
-const EXTERNAL_WS = process.env.EXTERNAL_WS || ''; // ngrok TCP URL for mobile data
+const WS_HOST = process.env.WS_HOST || '0.0.0.0'; // bind address
+const EXTERNAL_WS = process.env.EXTERNAL_WS || ''; // ngrok/tailscale URL for remote access
 
 function getLocalIP() {
   const nets = os.networkInterfaces();
@@ -24,7 +25,7 @@ function getLocalIP() {
 
 // --- HTTP server: QR code page ---
 const qrServer = http.createServer(async (req, res) => {
-  const wsUrl = EXTERNAL_WS || `ws://${getLocalIP()}:${WS_PORT}`;
+  const wsUrl = EXTERNAL_WS || `ws://${WS_HOST === '0.0.0.0' ? getLocalIP() : WS_HOST}:${WS_PORT}`;
   if (req.url === '/api/qr') {
     const payload = JSON.stringify({ url: wsUrl });
     const qr = await QRCode.toString(payload, { type: 'svg', width: 300 });
@@ -57,8 +58,8 @@ svg{margin:1.5em 0}.info{background:#1a1030;padding:2em 3em;border-radius:16px;t
 ${qrSVG}</div></body></html>`);
 });
 
-qrServer.listen(HTTP_PORT, () => {
-  const ip = getLocalIP();
+qrServer.listen(HTTP_PORT, WS_HOST, () => {
+  const ip = WS_HOST === '0.0.0.0' ? getLocalIP() : WS_HOST;
   console.log('='.repeat(50));
   console.log('  ZenRmouse Sunucusu Baslatildi!');
   console.log('='.repeat(50));
@@ -69,7 +70,7 @@ qrServer.listen(HTTP_PORT, () => {
 });
 
 // --- WebSocket server: phone connection ---
-const wss = new WebSocketServer({ port: WS_PORT });
+const wss = new WebSocketServer({ port: WS_PORT, host: WS_HOST });
 const clients = new Set();
 
 wss.on('listening', async () => {
