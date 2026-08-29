@@ -43,7 +43,20 @@ export default function ConnectionScreen({ onConnected }: Props) {
   const handleBarcode = ({ data }: { data: string }) => {
     try {
       const parsed = JSON.parse(data);
-      if (parsed.ip && parsed.port) {
+      // New format: { url: "ws://..." }
+      if (parsed.url) {
+        const url = parsed.url.replace(/^ws:\/\//, '');
+        const lastColon = url.lastIndexOf(':');
+        if (lastColon > 0) {
+          const host = url.substring(0, lastColon);
+          const port = url.substring(lastColon + 1);
+          setIp(host);
+          setPort(port);
+          connect(host, port);
+        }
+      }
+      // Old format: { ip, port }
+      else if (parsed.ip && parsed.port) {
         setIp(parsed.ip);
         setPort(String(parsed.port));
         connect(parsed.ip, String(parsed.port));

@@ -10,6 +10,7 @@ const bridge = require('./win32/bridge.js');
 
 const WS_PORT = parseInt(process.env.WS_PORT || '8321', 10);
 const HTTP_PORT = parseInt(process.env.HTTP_PORT || '8320', 10);
+const EXTERNAL_WS = process.env.EXTERNAL_WS || ''; // ngrok TCP URL for mobile data
 
 function getLocalIP() {
   const nets = os.networkInterfaces();
@@ -23,9 +24,9 @@ function getLocalIP() {
 
 // --- HTTP server: QR code page ---
 const qrServer = http.createServer(async (req, res) => {
+  const wsUrl = EXTERNAL_WS || `ws://${getLocalIP()}:${WS_PORT}`;
   if (req.url === '/api/qr') {
-    const ip = getLocalIP();
-    const payload = JSON.stringify({ ip, port: WS_PORT });
+    const payload = JSON.stringify({ url: wsUrl });
     const qr = await QRCode.toString(payload, { type: 'svg', width: 300 });
     res.writeHead(200, { 'Content-Type': 'image/svg+xml' });
     res.end(qr);
@@ -33,25 +34,26 @@ const qrServer = http.createServer(async (req, res) => {
   }
   if (req.url === '/api/info') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ ip: getLocalIP(), port: WS_PORT }));
+    res.end(JSON.stringify({ url: wsUrl }));
     return;
   }
   // Serve a simple HTML page
-  const ip = getLocalIP();
-  const infoJSON = JSON.stringify({ ip, port: WS_PORT });
+  const infoJSON = JSON.stringify({ url: wsUrl });
   const qrSVG = await QRCode.toString(infoJSON, { type: 'svg', width: 250 });
   const fs = require('fs');
   let logoBase64 = '';
   try { logoBase64 = fs.readFileSync(require('path').join(__dirname, '..', '..', 'mobile', 'assets', 'logo-banner.png')).toString('base64'); } catch {}
   const logoImg = logoBase64 ? `<img src="data:image/png;base64,${logoBase64}" style="height:80px;margin-bottom:16px" />` : '';
+  const modeLabel = EXTERNAL_WS ? 'MOBILE DATA MODE' : 'LOCAL NETWORK';
   res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
   res.end(`<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>ZenRmouse</title>
 <style>body{font-family:sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#0d0a1a;color:#e2d9f3;flex-direction:column}
 p{font-size:1.2em;color:#8b7aa8}
-svg{margin:1.5em 0}.info{background:#1a1030;padding:2em 3em;border-radius:16px;text-align:center;border:1px solid #3d2060}</style></head>
-<body><div class="info">${logoImg}<p>Telefonundan bu QR kodu okut veya manuel baglan:</p>
-<p style="font-size:1.5em;font-weight:bold;color:#a855f7">${ip}:${WS_PORT}</p>
+svg{margin:1.5em 0}.info{background:#1a1030;padding:2em 3em;border-radius:16px;text-align:center;border:1px solid #3d2060}
+.mode{background:#a855f7;color:white;padding:4px 12px;border-radius:8px;font-size:0.8em;margin-bottom:12px}</style></head>
+<body><div class="info">${logoImg}<div class="mode">${modeLabel}</div><p>Scan QR code from phone app or connect manually:</p>
+<p style="font-size:1.3em;font-weight:bold;color:#a855f7;word-break:break-all">${wsUrl}</p>
 ${qrSVG}</div></body></html>`);
 });
 

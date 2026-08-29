@@ -23,6 +23,10 @@ REM 4. Set ADB reverse
 echo [*] Setting ADB reverse...
 %ANDROID_HOME%\platform-tools\adb.exe reverse tcp:8081 tcp:8081
 
+REM 5. Open QR page in browser
+echo [*] Opening QR code page...
+start http://localhost:8320
+
 echo ===================================
 echo  Server:  ws://YOUR_IP:8321
 echo  QR Code: http://YOUR_IP:8320
