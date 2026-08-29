@@ -68,7 +68,7 @@ export default function ConnectionScreen({ onConnected }: Props) {
     <View style={styles.container}>
       <Image source={require('../../assets/logo-icon.png')} style={styles.logo} resizeMode="contain" />
       <Text style={styles.title}>ZenRmouse</Text>
-      <Text style={styles.subtitle}>PC Uzaktan Kumanda</Text>
+      <Text style={styles.subtitle}>PC Remote Control</Text>
 
       <View style={styles.modeRow}>
         <TouchableOpacity
@@ -76,7 +76,7 @@ export default function ConnectionScreen({ onConnected }: Props) {
           onPress={() => setMode('manual')}
         >
           <Text style={[styles.modeBtnText, mode === 'manual' && styles.modeBtnTextActive]}>
-            Manuel
+            Manual
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -87,7 +87,7 @@ export default function ConnectionScreen({ onConnected }: Props) {
           }}
         >
           <Text style={[styles.modeBtnText, mode === 'qr' && styles.modeBtnTextActive]}>
-            QR Kod
+            QR Code
           </Text>
         </TouchableOpacity>
       </View>
@@ -96,7 +96,7 @@ export default function ConnectionScreen({ onConnected }: Props) {
         <View style={styles.form}>
           <TextInput
             style={styles.input}
-            placeholder="PC IP adresi (orn: 192.168.1.8)"
+            placeholder="PC IP address (e.g. 192.168.1.8)"
             placeholderTextColor={C.textDim}
             value={ip}
             onChangeText={setIp}
@@ -105,7 +105,7 @@ export default function ConnectionScreen({ onConnected }: Props) {
           />
           <TextInput
             style={styles.input}
-            placeholder="Port (varsayilan: 8321)"
+            placeholder="Port (default: 8321)"
             placeholderTextColor={C.textDim}
             value={port}
             onChangeText={setPort}
@@ -119,7 +119,7 @@ export default function ConnectionScreen({ onConnected }: Props) {
             {status === 'connecting' ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.connectBtnText}>Baglan</Text>
+              <Text style={styles.connectBtnText}>Connect</Text>
             )}
           </TouchableOpacity>
           {status === 'error' && (
@@ -136,12 +136,12 @@ export default function ConnectionScreen({ onConnected }: Props) {
             >
               <View style={styles.overlay}>
                 <View style={styles.qrFrame} />
-                <Text style={styles.qrHint}>QR kodu taratin</Text>
+                <Text style={styles.qrHint}>Scan QR code</Text>
               </View>
             </CameraView>
           ) : (
             <TouchableOpacity onPress={requestPermission} style={styles.permBtn}>
-              <Text style={styles.permBtnText}>Kamera izni ver</Text>
+              <Text style={styles.permBtnText}>Grant Camera Permission</Text>
             </TouchableOpacity>
           )}
         </View>

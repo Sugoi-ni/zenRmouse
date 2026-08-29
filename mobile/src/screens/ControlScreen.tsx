@@ -156,11 +156,11 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
       <View style={s.topBar}>
         <View style={[s.statusDot, { backgroundColor: wsStatus === 'connected' ? C.success : wsStatus === 'connecting' ? C.warning : C.danger }]} />
         <Text style={s.statusText}>
-          {wsStatus === 'connected' ? 'Bagli' : wsStatus === 'connecting' ? 'Baglaniyor...' : 'Baglanti kesildi'}
+          {wsStatus === 'connected' ? 'Connected' : wsStatus === 'connecting' ? 'Connecting...' : 'Disconnected'}
         </Text>
         <View style={{ flex: 1 }} />
         <TouchableOpacity onPress={onDisconnect}>
-          <Text style={s.disconnectBtn}>Kes</Text>
+          <Text style={s.disconnectBtn}>Disconnect</Text>
         </TouchableOpacity>
       </View>
 
@@ -169,7 +169,7 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
         {(['touch', 'motion', 'keys', 'media'] as Tab[]).map((t) => (
           <TouchableOpacity key={t} style={[s.tab, tab === t && s.tabActive]} onPress={() => setTab(t)}>
             <Text style={[s.tabText, tab === t && s.tabTextActive]}>
-              {t === 'touch' ? 'Dokunmatik' : t === 'motion' ? 'Hareket' : t === 'keys' ? 'Klavye' : 'Medya'}
+              {t === 'touch' ? 'Touch' : t === 'motion' ? 'Motion' : t === 'keys' ? 'Keys' : 'Media'}
             </Text>
           </TouchableOpacity>
         ))}
@@ -183,10 +183,10 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
             <View style={s.buttonArea}>
               <View style={s.btnRow}>
                 <TouchableOpacity style={[s.hotkeyBtn, { borderColor: C.accent }]} onPress={() => doAction('hotkey', { mods: 'ALT', key: 'LEFT' })}>
-                  <Text style={[s.btnLabel, { color: C.accent }]}>{'<< GERI'}</Text>
+                  <Text style={[s.btnLabel, { color: C.accent }]}>{'<< BACK'}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[s.hotkeyBtn, { borderColor: C.accent }]} onPress={() => doAction('hotkey', { mods: 'ALT', key: 'RIGHT' })}>
-                  <Text style={[s.btnLabel, { color: C.accent }]}>{'ILERI >>'}</Text>
+                  <Text style={[s.btnLabel, { color: C.accent }]}>{'FORWARD >>'}</Text>
                 </TouchableOpacity>
               </View>
               <View style={s.btnRow}>
@@ -211,7 +211,7 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
                   <Text style={s.btnLabel}>SCROLL DOWN</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[s.actionBtn, { borderColor: C.warning }]} onPress={() => doAction('click', { button: 'middle' })}>
-                  <Text style={s.btnLabel}>ORTA</Text>
+                  <Text style={s.btnLabel}>MIDDLE</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -226,11 +226,11 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
               onResponderRelease={handleTouchEnd}
             >
               {isDragging ? (
-                <Text style={s.touchpadDraggingText}>SURUKLEMEDE</Text>
+                <Text style={s.touchpadDraggingText}>DRAGGING</Text>
               ) : (
                 <>
                   <Text style={s.touchpadHint}>TOUCHPAD</Text>
-                  <Text style={s.touchpadSubtext}>Surukle = imlec | Cift tikla+tut = surukle</Text>
+                  <Text style={s.touchpadSubtext}>Swipe = move cursor | Double-tap+hold = drag</Text>
                 </>
               )}
             </View>
@@ -251,7 +251,7 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
                   }
                 }}
               >
-                <Text style={s.bottomBtnText}>{isDragging ? 'BIRAK' : 'SURUKLE'}</Text>
+                <Text style={s.bottomBtnText}>{isDragging ? 'RELEASE' : 'DRAG'}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[s.bottomBtn, { backgroundColor: '#1e40af' }]}
@@ -269,7 +269,7 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
           </View>
         )}
 
-        {/* ===== HAREKET ===== */}
+        {/* ===== MOTION ===== */}
         {tab === 'motion' && (
           <View style={s.motionArea}>
             <TouchableOpacity
@@ -277,20 +277,20 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
               onPress={() => motionEnabled ? stopMotion() : startMotion()}
             >
               <Text style={[s.motionToggleText, motionEnabled && s.motionToggleTextActive]}>
-                {motionEnabled ? 'HAREKET AKTIF - Durdur' : 'Hareketi Baslat'}
+                {motionEnabled ? 'MOTION ACTIVE - Stop' : 'Start Motion'}
               </Text>
             </TouchableOpacity>
 
-            <Text style={s.motionHint}>Telefoni duz tut, Baslat, sonra eg</Text>
+            <Text style={s.motionHint}>Hold phone upright, tap Start, then tilt to move cursor</Text>
 
             {motionEnabled && (
               <TouchableOpacity style={s.calibrateBtn} onPress={calibrateMotion}>
-                <Text style={s.calibrateBtnText}>Kalibre Et (merkezi sifirla)</Text>
+                <Text style={s.calibrateBtnText}>Calibrate (reset center)</Text>
               </TouchableOpacity>
             )}
 
             <View style={s.sensitivityRow}>
-              <Text style={s.sensLabel}>Duyarlilik: {sensitivity}</Text>
+              <Text style={s.sensLabel}>Sensitivity: {sensitivity}</Text>
               <View style={s.sensBtns}>
                 {[1, 2, 3, 4, 5].map((sv) => (
                   <TouchableOpacity key={sv} style={[s.sensBtn, sv === sensitivity && s.sensBtnActive]} onPress={() => setSensitivity(sv)}>
@@ -302,21 +302,21 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
 
             <View style={s.btnRow}>
               <TouchableOpacity style={[s.bottomBtn, { backgroundColor: '#1e40af' }]} onPress={() => doAction('click', { button: 'left' })}>
-                <Text style={s.bottomBtnText}>SOL TIK</Text>
+                <Text style={s.bottomBtnText}>LEFT CLICK</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[s.bottomBtn, { backgroundColor: '#991b1b' }]} onPress={() => doAction('click', { button: 'right' })}>
-                <Text style={s.bottomBtnText}>SAG TIK</Text>
+                <Text style={s.bottomBtnText}>RIGHT CLICK</Text>
               </TouchableOpacity>
             </View>
           </View>
         )}
 
-        {/* ===== KLAVYE ===== */}
+        {/* ===== KEYS ===== */}
         {tab === 'keys' && (
           <ScrollView style={s.keysArea}>
             <TextInput
               style={s.keyInput}
-              placeholder="Metin yazin..."
+              placeholder="Type text..."
               placeholderTextColor={C.textDim}
               value={keyText}
               onChangeText={setKeyText}
@@ -325,11 +325,11 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
               autoCapitalize="none"
             />
             <TouchableOpacity style={s.sendBtn} onPress={() => { if (keyText) { doAction('type', { text: keyText }); setKeyText(''); } }}>
-              <Text style={s.sendBtnText}>Gonder</Text>
+              <Text style={s.sendBtnText}>Send</Text>
             </TouchableOpacity>
 
-            {/* Kontrol tuslari */}
-            <Text style={s.sectionLabel}>Kontrol Tuslari</Text>
+            {/* Control keys */}
+            <Text style={s.sectionLabel}>Control Keys</Text>
             <View style={s.keyGrid}>
               {[
                 ['ENTER', 'TAB', 'BACKSPACE', 'DELETE'],
@@ -351,17 +351,17 @@ export default function ControlScreen({ send, onDisconnect, wsStatus }: Props) {
           </ScrollView>
         )}
 
-        {/* ===== MEDYA ===== */}
+        {/* ===== MEDIA ===== */}
         {tab === 'media' && (
           <View style={s.mediaArea}>
             {[
-              { label: 'Ses Ac', key: 'volumeup', color: C.success },
-              { label: 'Ses Kis', key: 'volumedown', color: C.danger },
-              { label: 'Sessiz', key: 'mute', color: C.warning },
-              { label: 'Oynat / Duraklat', key: 'playpause', color: C.accent },
-              { label: 'Sonraki', key: 'next', color: C.accentLight },
-              { label: 'Onceki', key: 'prev', color: C.accentLight },
-              { label: 'Durdur', key: 'stop', color: C.danger },
+              { label: 'Volume Up', key: 'volumeup', color: C.success },
+              { label: 'Volume Down', key: 'volumedown', color: C.danger },
+              { label: 'Mute', key: 'mute', color: C.warning },
+              { label: 'Play / Pause', key: 'playpause', color: C.accent },
+              { label: 'Next', key: 'next', color: C.accentLight },
+              { label: 'Previous', key: 'prev', color: C.accentLight },
+              { label: 'Stop', key: 'stop', color: C.danger },
             ].map(({ label, key, color }) => (
               <TouchableOpacity key={key} style={[s.mediaBtn, { borderColor: color }]} onPress={() => doAction('media', { key })}>
                 <Text style={[s.mediaLabel, { color }]}>{label}</Text>
