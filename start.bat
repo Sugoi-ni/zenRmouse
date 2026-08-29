@@ -6,11 +6,14 @@ echo ===================================
 echo  ZenRmouse - Starting...
 echo ===================================
 
-set ANDROID_HOME=C:\Users\Arif\AppData\Local\Android\Sdk
+REM Auto-detect paths relative to this script
+set "ROOT=%~dp0"
+set "ANDROID_HOME=%LOCALAPPDATA%\Android\Sdk"
+set "ADB=%ANDROID_HOME%\platform-tools\adb.exe"
 
 REM Start server silently
 echo [*] Starting server...
-cd /d C:\Users\Arif\WiiCtl\server
+cd /d "%ROOT%server"
 start "" /min node src/index.js
 
 REM Wait for server to start
@@ -22,13 +25,13 @@ start http://localhost:8320
 
 REM Start Metro in this window
 echo [*] Starting Metro bundler...
-cd /d C:\Users\Arif\WiiCtl\mobile
+cd /d "%ROOT%mobile"
 npx expo start --dev-client
 
 REM When Metro exits, set ADB reverse
 echo.
 echo [*] Setting ADB reverse...
-%ANDROID_HOME%\platform-tools\adb.exe reverse tcp:8081 tcp:8081
+if exist "%ADB%" "%ADB%" reverse tcp:8081 tcp:8081
 
 echo.
 echo ===================================
