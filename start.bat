@@ -24,25 +24,14 @@ cd /d "%ROOT%server"
 start /b node src/index.js
 timeout /t 2 /nobreak >nul
 
-REM Set ADB reverse (works for both USB and WiFi)
-echo [*] Setting ADB reverse...
-if exist "%ADB%" "%ADB%" reverse tcp:8081 tcp:8081 2>nul
-if exist "%ADB%" "%ADB%" reverse tcp:8321 tcp:8321 2>nul
-
 REM Open QR page
 echo [*] Opening QR code page...
 start http://localhost:8320
 
-REM Set Metro to advertise LAN IP (USB-less support)
-set "REACT_NATIVE_PACKAGER_HOSTNAME=%LAN_IP%"
-
-REM Start Metro in this window (LAN mode - no USB needed)
-echo [*] Starting Metro bundler...
-cd /d "%ROOT%mobile"
-npx expo start --dev-client --host lan
-
 echo.
 echo ===================================
-echo  Done!
+echo  Server started on %LAN_IP%:8321
+echo  Open ZenRmouse app and enter:
+echo  %LAN_IP%
 echo ===================================
 pause
