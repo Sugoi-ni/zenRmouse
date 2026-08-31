@@ -11,11 +11,17 @@ set "ROOT=%~dp0"
 set "ANDROID_HOME=%LOCALAPPDATA%\Android\Sdk"
 set "ADB=%ANDROID_HOME%\platform-tools\adb.exe"
 
-REM Auto-detect WiFi IP
-for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /i "Wi-Fi"') do set "WIFI_LINE=%%a"
-for /f "tokens=1" %%a in ('ipconfig ^| findstr /i "%WIFI_LINE%" -A 5 ^| findstr /i "IPv4"') do set "RAWIP=%%a"
-for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /i "%WIFI_LINE%" -A 5 ^| findstr /i "IPv4"') do set "LAN_IP=%%a"
-set "LAN_IP=%LAN_IP: =%"
+REM Kill any previous server on ports 8320/8321
+for /f "tokens=5" %%p in ('netstat -ano ^| findstr ":8320 :8321" ^| findstr "LISTENING"') do taskkill /F /PID %%p >nul 2>&1
+timeout /t 1 /nobreak >nul
+
+REM Auto-detect WiFi IP using PowerShell (reliable)
+for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-NetIPAddress -AddressFamily IPv4 | Where-Object InterfaceAlias -match Wi-Fi | Select-Object -ExpandProperty IPAddress"') do set "LAN_IP=%%i"
+if not defined LAN_IP (
+    echo [!] WiFi IP not found! Make sure WiFi is connected.
+    pause
+    exit /b 1
+)
 echo [*] Detected WiFi IP: %LAN_IP%
 
 REM Start server in background
